@@ -1,0 +1,47 @@
+<head></head>
+<body style="background-color: #F5F8FA;">
+
+  <div id="container" style="font-family: Verdana, Arial; color: #F5F8FA; font-weight: 500;
+  background-color: #FF601C; max-width: 100%; height: auto; padding: 6px; border-radius: 3px;">
+    <form>
+      <div>
+        <label>Select video</label>
+        <input type="file" accept="video/*" />
+      </div>
+      <input class="btn_getInfo" type="submit" value="Get Info" style="background-color: #3072FF;
+      color: #F5F8FA; border-style: none; border-radius: 3px; cursor: pointer; width: 60px; height: 20px;" />
+    </form>
+
+    <div id="result" style="font-family: Courier; font-size: 16px; font-weight: 500;
+    background-color: #FFFEFC; color: #F05411; border-radius: 8px; max-width: 246px; padding-left: 8px;"></div>
+
+    <script>
+    const electron = require('electron');
+    const { ipcRenderer } = electron;
+
+document.querySelector('form').addEventListener('submit', () => {
+  event.preventDefault();
+  const { path } = document.querySelector('input').files[0];
+
+  ipcRenderer.send('video:submit', path);
+});
+
+const durationFormat = (dur) => {
+  const durHour = dur>=3600 ? ((dur/3600) - (dur%3600)).toFixed() : 0;
+  const durMin = dur>=60 ? (dur/60-1).toFixed() : 0;
+  const durSec = (dur%60).toFixed(2);
+
+  const durHourStr = durHour ? durHour.toString() : '00';
+  const durMinStr = durMin>=10 ? durMin.toString() : `0${durMin}`;
+  const durSecStr = durSec>=10 ? durSec.toString() : `0${durSec}`;
+
+  return `${durHourStr} : ${durMinStr} : ${durSecStr}`;
+}
+
+ipcRenderer.on('video:metadata', (event, duration) => {
+  document.querySelector('#result').innerHTML = `Duration ${durationFormat(duration)}`;
+});
+</script>
+  </div>
+
+</body>
