@@ -1,1 +1,1 @@
-npm install in electron\resources\app
+npm install in electron/resources/app
